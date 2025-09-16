@@ -1,0 +1,29 @@
+.home-heading{
+    font-size: 2.5rem;
+    font-weight: 600;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:5px;
+}
+.home-heading::before,.home-heading::after{
+    content: "";
+    display: inline-block; 
+    width: 200px;
+    height:2px;
+    background-color: #000;
+}
+
+.ionicon{
+    display: block;
+    height: 25PX;
+    width: 25PX;
+    Stroke: white;
+}
+
+@media (max-width:768px){
+    .home-heading{
+        font-size: 1.5rem;
+    }
+}
