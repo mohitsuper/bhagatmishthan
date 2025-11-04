@@ -1,21 +1,55 @@
 // src/components/HeroSwiper.jsx
-import React from "react";
-
-// Swiper React components
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import heroswiperimg1 from '../../assets/images/imgi_2_laddu_77247.webp'
-import heroswiperimg2 from '../../assets/images/imgi_3_bhagat-banner-current-4-_76611.webp'
-import heroswiperimg3 from '../../assets/images/imgi_4_namkeen-2-_3284.webp'
+
+// Local fallback images
+import heroswiperimg1 from "../../assets/images/hero-benner/imgi_2_laddu_77247.webp";
+import heroswiperimg2 from "../../assets/images/hero-benner/imgi_3_bhagat-banner-current-4-_76611.webp";
+import heroswiperimg3 from "../../assets/images/hero-benner/imgi_4_namkeen-2-_3284.webp";
 
 // Swiper modules
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { GetHeroBanner } from "../../Api/Api";
 
 export default function Hero() {
+  const [banner, setBanner] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const HeroData = async () => {
+      try {
+        const response = await GetHeroBanner();
+        setBanner(response || []); // ✅ handle undefined/null
+      } catch (error) {
+        console.error("Error fetching hero banner:", error);
+      } finally {
+        setLoading(false); // ✅ always stop loading
+      }
+    };
+    HeroData();
+  }, []);
+
+  // ✅ Loading state
+  if (loading) {
+    return (
+      <div className="h-[500px] w-full bg-gray-50 flex justify-center items-center text-gray-600 text-xl">
+        Loading...
+      </div>
+    );
+  }
+  if(banner.length === 0){
+    return(
+      <div className="h-0 w-full bg-gray-50 flex justify-center items-center text-gray-600 text-xl">
+      </div>
+    )
+  }
+
+
   return (
     <Swiper
       modules={[Navigation, Pagination, Autoplay]}
@@ -23,17 +57,17 @@ export default function Hero() {
       pagination={{ clickable: true }}
       autoplay={{ delay: 4000, disableOnInteraction: false }}
       loop={true}
-      className="h-full w-full object-cover"
+      className="h-[630px] w-full"
     >
-      {
-        [heroswiperimg1,heroswiperimg2,heroswiperimg3].map((item,index)=>{
-            return(
-            <SwiperSlide key={index}>
-                <img src={item} />
-            </SwiperSlide>
-            )
-        })
-      }
+      {banner.map((item, index) => (
+        <SwiperSlide key={index} className="w-full h-full">
+          <img
+            src={item.image}
+            alt={`Hero Slide ${index + 1}`}
+            className="h-full w-full object-contain"
+          />
+        </SwiperSlide>
+      ))}
     </Swiper>
   );
 }

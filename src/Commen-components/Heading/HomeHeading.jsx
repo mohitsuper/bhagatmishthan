@@ -1,5 +1,5 @@
 import React from 'react'
-import Himg from '../../assets/images/imgi_7_hding-after.png'
+import Himg from '../../assets/images/shapes/imgi_7_hding-after.png'
 export default function HomeHeading({title}) {
   return (
     <div className='flex-col items-center flex gap-2'>

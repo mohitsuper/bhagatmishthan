@@ -19,11 +19,11 @@ const shopPath = [
 ];
 export default function ShopFilter() {
   return (
-    <div className="flex justify-between px-20 py-10">
-      <select className="px-5 py-3 border border-gray-300">
+    <div className="flex justify-between px-40 py-10">
+      <select className="px-5 py-3 border border-gray-300" defaultValue="">
         {shopPath.map((item, index) => (
           <option className="p-3 border border-gray-300" value={item.path} key={index}>
-            <Link to={`/shop/${item.path}`}>{item.title}</Link>
+            {item.title}
           </option>
         ))}
       </select>

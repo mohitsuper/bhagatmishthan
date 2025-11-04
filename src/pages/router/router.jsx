@@ -3,13 +3,21 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import HomePage from '../HomePage/HomePage'
 import ProductDeities from '../ProductDeities/ProductDeities'
 import ShopPage from '../shop/ShopPage'
+import ShopProductDeilties from '../ShopProductDeilties/ShopProductDeilties'
+import Singin from '../singin/Singin'
+import Singup from '../singup/Singup'
+import Myaccount from '../Profile/Myaccount'
 export default function Allrouter() {
   return (
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path='/product/:slug' element={<ProductDeities/>}/>
+             <Route path="/singin" element={<Singin />} />
+             <Route path='/singup' element={<Singup/>}/>
+             <Route path='/product/:slug' element={<ProductDeities/>}/>
             <Route path='/shop/:slug' element={<ShopPage/>}/>
-
+            <Route path='/shop/:slug/:slug' element={<ShopProductDeilties/>}/>
+            <Route path="/profile" element={<Myaccount/>}/>
+            {/* <Route path="/chekout" element={}/> */}
           </Routes>
   )
 }

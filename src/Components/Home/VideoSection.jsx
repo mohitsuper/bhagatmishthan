@@ -9,7 +9,7 @@ const videoUrl =[
     "https://www.youtube.com/embed/SyPaW4dD7AQ",
 ]
   return (
-    <div className='pt-20 px-35'>
+    <div className='pt-20 px-35 mb-10'>
         <HomeHeading title={"Video Gallery"}/>
         <div className='video-section pt-15'>
             <div className='grid grid-cols-4 gap-5'>

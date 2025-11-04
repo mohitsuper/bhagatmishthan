@@ -2,10 +2,10 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-gray-700 shadow-[0_-4px_6px_rgba(0,0,0,0.1)] mt-10">
+    <footer className="bg-white text-gray-700 shadow-[0_-4px_6px_rgba(0,0,0,0.1)] ">
       
       {/* Top section */}
-      <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="c px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
         
         {/* Logo + About */}
         <div>

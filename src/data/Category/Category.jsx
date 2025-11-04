@@ -1,10 +1,9 @@
-import img1 from '../../assets/images/imgi_18_laddu-1-1-_57910.webp'
-import img2 from '../../assets/images/imgi_19_mawa-sweets_61286.webp'
-import img3 from '../../assets/images/imgi_20_dry-fruit-sweets_79149.webp'
-import img4 from '../../assets/images/imgi_21_ghee-sweets_95721.webp'
-import img5 from '../../assets/images/imgi_22_bengali-sweets_15639.webp'
-import img6 from '../../assets/images/imgi_23_namkeen_41227.webp'
-
+import img1 from '../../assets/images/category-banner/imgi_18_laddu-1-1-_57910.webp'
+import img2 from '../../assets/images/category-banner/imgi_19_mawa-sweets_61286.webp'
+import img3 from '../../assets/images/category-banner/imgi_20_dry-fruit-sweets_79149.webp'
+import img4 from '../../assets/images/category-banner/imgi_21_ghee-sweets_95721.webp'
+import img5 from '../../assets/images/category-banner/imgi_22_bengali-sweets_15639.webp'
+import img6 from '../../assets/images/category-banner/imgi_23_namkeen_41227.webp'
 
 export const productCategory = [
   {

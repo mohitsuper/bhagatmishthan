@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 
 export default function SIngleCard({ data }) {
   return (
-    <Link to={`/product/${data.title.toLowerCase()}`}>
+    <Link to={`/shop/${data.category}/${data._id}`}>
       <div className="bg-white rounded-xl shadow-md p-4 overflow-hidden hover:shadow-lg transition-shadow duration-300">
         <img
-          src={data?.img}
+          src={data?.img || data?.subimage[0]}
           alt={data?.title}   loading="lazy" 
           className="w-full h-48 object-cover rounded-xl"
         />

@@ -1,32 +1,132 @@
-import { useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { Link, Links, NavLink } from "react-router-dom";
 import { NavLinks } from "../../data/Navbar/Navbar";
 import { ContactInfo } from "../../data/contact/ContactData";
+import { GetCard, GetCategory } from "../../Api/Api";
+import AddToCard from "./AddToCard";
+import FevouriteCard from "./FevouriteCard";
+import { AddToCardVal } from "../../UseContext/AddToCardContext";
 export default function Header() {
+  const [isopen, setIsopen] = useState(null);
+  const [AddCardOpen, setAddCardOpen] = useState(false);
+  const [federatedOpen, setFederatedOpen] = useState(false);
+  const [AddCardData, setAddCardData] = useState([]);
+  const [isTopPostion, setisTopPostion] = useState(false);
+  const [issetSearchOpen, setisSearchOpen] = useState(false);
+  const [isRelode, setIsReload] = useState(false);
+  const [AllCategory, setAllCategory] = useState([]);
 
-  const [isopen, setIsopen] = useState(null)
-  console.log(isopen)
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const { count } = useContext(AddToCardVal);
+  const isHandelReloade = (data) => {
+    setIsReload(data);
+  };
+  const GetcategoryAll = async () => {
+    const responce = await GetCategory();
+    setAllCategory(responce);
+  };
+  useEffect(() => {
+    const FetchApiData = async () => {
+      const data = await GetCard();
+      setAddCardData(data);
+      GetcategoryAll();
+    };
+    FetchApiData();
+  },[isRelode]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY >= 30) {
+        setisTopPostion(true);
+      } else {
+        setisTopPostion(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // const [isActive,setIsActive] = useState(false)
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      {/* Top contact info bar */}
-      <div className="bg-indigo-50 text-black text-sm flex items-center gap-5 justify-end px-10">
-        <div className="flex gap-6 items-center py-2">
-          <p><i className="fa-solid fa-phone"></i> {ContactInfo.phone}</p>
-          <span>|</span>
-          <p><i className="fa-solid fa-envelope"></i> {ContactInfo.email}</p>
-        </div>
-        <div className="flex py-2 gap-3">
-          <button className="text-indigo-600 hover:text-indigo-800 font-semibold px-3 py-1 border border-indigo-600 rounded-md transition">
-            Sign In
-          </button>
-          <button className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold px-3 py-1 rounded-md transition">
-            Sign Up
-          </button>
-        </div>
+    <header className="bg-white shadow-md sticky top-0 z-50 relative">
+      <div
+        className={`
+    fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl
+    transition-all duration-300 ease-in-out
+    ${AddCardOpen ? "w-80" : "w-0 overflow-hidden"}
+  `}
+      >
+        {/* Close Button */}
+        <button
+          onClick={() => setAddCardOpen(false)}
+          className="absolute top-5 left-5 text-gray-700 hover:text-gray-900 p-2 rounded-full transition-colors"
+        >
+          <i className="fas fa-xmark text-2xl"></i>
+        </button>
+        <AddToCard
+          AddCardOpen={AddCardOpen}
+          isHandelReloade={isHandelReloade}
+          AddCardData={AddCardData}
+        />
       </div>
 
-      <div className="container mx-auto flex items-center justify-between p-4">
+      <div
+        className={`
+    fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl
+    transition-all duration-300 ease-in-out
+    ${federatedOpen ? "w-80" : "w-0 overflow-hidden"}
+  `}
+      >
+        {/* Close Button */}
+        <button
+          onClick={() => setFederatedOpen(false)}
+          className="absolute top-5 left-5 text-gray-700 hover:text-gray-900 p-2 rounded-full transition-colors"
+        >
+          <i className="fas fa-xmark text-2xl"></i>
+        </button>
+        <FevouriteCard />
+      </div>
+      <div className="bg-indigo-50 text-black text-sm flex items-center gap-5 justify-end px-40">
+        <div className="flex gap-6 items-center py-2">
+          <p>
+            <i className="fa-solid fa-phone"></i> {ContactInfo.phone}
+          </p>
+          <span>|</span>
+          <p>
+            <i className="fa-solid fa-envelope"></i> {ContactInfo.email}
+          </p>
+        </div>
+        {user ? (
+          <div className="flex py-2 gap-3">
+            <button
+              className="text-indigo-600 hover:text-indigo-800 font-semibold px-3 py-1 border border-indigo-600 rounded-md transition cursor-pointer"
+              onClick={() => {
+                sessionStorage.clear();
+                window.location.reload();
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="flex py-2 gap-3">
+            <Link
+              className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold px-3 py-1 rounded-md transition cursor-pointer"
+              to="/singin"
+            >
+              Sign In
+            </Link>
+            <Link
+              className="bg-white border border-indigo-500  text-indigo-500 hover:bg-indigo-700 font-semibold px-3 py-1 rounded-md transition cursor-pointer"
+              to="/singup"
+            >
+              Sign Up
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <div className="py-4 flex items-center justify-between px-40">
         {/* Logo */}
         <div className="h-[60px] w-[150px]">
           <img src="/logo.png" className="h-full w-full object-contain" />
@@ -37,33 +137,43 @@ export default function Header() {
           <ul className="flex gap-5">
             {NavLinks.map((v, i) => {
               return (
-                <li key={i} className="relative">
+                <li
+                  key={i}
+                  className="relative"
+                  onMouseLeave={() => setIsopen(null)}
+                  onMouseEnter={() => setIsopen(isopen === i ? null : i)}
+                >
                   <NavLink
                     className={({ isActive }) =>
-                      isActive ? "text-indigo-500" : "text-black "
+                      ` py-5 ${isActive ? "text-indigo-500" : "text-black "}`
                     }
                     to={v.link}
-                    onMouseEnter={()=>setIsopen((isopen === i)?null:i )}
                   >
-                    {v.name} 
+                    {v.name} {"  "}{" "}
+                    {v.submenu && <i className="fa-solid fa-angle-down"></i>}
                   </NavLink>
-                  {
-                    (isopen === i) && v.submenu &&  (
-                      <div className="fixed bg-white top-34">
-                        <ul className="flex flex-wrap w-80 gap-5 p-5 shadow rounded-lg">
-                          {
-                            v.submenu.map((subItem,subIndex)=>{
-                              return(
-                                <li key={subIndex}>
-                                  <Link to={`/shop${subItem.path}`} className="text-gray-700 hover:text-blue-500 font-[400]">{subItem.title}</Link>
-                                </li>
-                              )
-                            })
-                          }
-                        </ul>
-                      </div>
-                    )
-                  }
+                  {isopen === i && v.submenu && (
+                    <div
+                      className={`fixed bg-white ${
+                        isTopPostion ? "top-32" : "top-40"
+                      } z-20  w-[60%] left-90 rounded-lg shadow`}
+                    >
+                      <ul className="grid grid-cols-4 gap-4  p-5">
+                        {AllCategory.map((subItem, subIndex) => {
+                          return (
+                            <li key={subIndex} className="w-full">
+                              <Link
+                                to={`/shop/${subItem?.name}`}
+                                className="text-gray-700 hover:text-blue-500  font-[500]"
+                              >
+                                {subItem?.name}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
                 </li>
               );
             })}
@@ -71,67 +181,44 @@ export default function Header() {
         </nav>
 
         {/* Search Bar */}
-        <div className="flex-1 mx-4 max-w-md">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
+        {issetSearchOpen === true && (
+          <div className="flex-1 mx-4 max-w-md">
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+        )}
 
         {/* User actions: Account icons + Sign In/Sign Up */}
-        <div className="flex items-center space-x-4 text-gray-700">
-          {/* User Icon */}
-          <button
-            aria-label="User account"
-            className="hover:text-indigo-600 transition hidden md:block"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5.121 17.804A9 9 0 1118.88 6.196 9 9 0 015.12 17.805z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
-          </button>
+        <div className="flex items-center space-x-4 text-gray-700 text-[22px]">
+          <i
+            className="fa-solid fa-magnifying-glass"
+            onClick={() => setisSearchOpen(!issetSearchOpen)}
+          ></i>
 
-          {/* Cart Icon with badge */}
-          <button
-            aria-label="Shopping cart"
-            className="relative hover:text-indigo-600 transition"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7a1 1 0 00.9 1.5h12.4M16 17a2 2 0 11-4 0 2 2 0 014 0z"
-              />
-            </svg>
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-semibold">
-              3
-            </span>
-          </button>
+          <div className="relative" onClick={() => setFederatedOpen(true)}>
+            <i className="fa-solid fa-heart text-red-600"></i>
+            <p className="text-[12px] p-2 bg-red-600 text-white h-4 w-4 flex justify-center items-center absolute top-0 -right-2 rounded-full">
+              {0}
+            </p>
+          </div>
+          <div className="relative" onClick={() => setAddCardOpen(true)}>
+            <i className="fa-solid fa-cart-shopping"></i>
+            <p className="text-[12px] p-2 bg-red-600 text-white h-4 w-4 flex justify-center items-center absolute top-0 -right-2 rounded-full">
+              {count}
+            </p>
+          </div>
 
-          {/* Sign In / Sign Up buttons */}
+          <div className="ml-20">
+            {user && (
+              <Link to={"/profile"}>
+                <i className="fa-solid fa-circle-user"></i>
+                <span className="ml-3 text-[1.2rem]">Myaccount</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </header>
