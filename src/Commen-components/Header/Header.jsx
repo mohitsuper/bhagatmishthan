@@ -1,11 +1,13 @@
-import { use, useContext, useEffect, useState } from "react";
-import { Link, Links, NavLink } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { NavLinks } from "../../data/Navbar/Navbar";
 import { ContactInfo } from "../../data/contact/ContactData";
 import { GetCard, GetCategory } from "../../Api/Api";
 import AddToCard from "./AddToCard";
 import FevouriteCard from "./FevouriteCard";
 import { AddToCardVal } from "../../UseContext/AddToCardContext";
+import MobileHeader from "./MobileHeader";
+
 export default function Header() {
   const [isopen, setIsopen] = useState(null);
   const [AddCardOpen, setAddCardOpen] = useState(false);
@@ -15,16 +17,29 @@ export default function Header() {
   const [issetSearchOpen, setisSearchOpen] = useState(false);
   const [isRelode, setIsReload] = useState(false);
   const [AllCategory, setAllCategory] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); // <-- check initial size
 
   const user = JSON.parse(sessionStorage.getItem("user"));
   const { count } = useContext(AddToCardVal);
+
   const isHandelReloade = (data) => {
     setIsReload(data);
   };
+
   const GetcategoryAll = async () => {
     const responce = await GetCategory();
     setAllCategory(responce || []);
   };
+
+  // Detect window resize for mobile
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const FetchApiData = async () => {
       const data = await GetCard();
@@ -32,31 +47,30 @@ export default function Header() {
       GetcategoryAll();
     };
     FetchApiData();
-  },[isRelode]);
+  }, [isRelode]);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY >= 30) {
-        setisTopPostion(true);
-      } else {
-        setisTopPostion(false);
-      }
+      setisTopPostion(window.scrollY >= 30);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // const [isActive,setIsActive] = useState(false)
+  // If mobile, render MobileHeader
+  if (isMobile) {
+    return <MobileHeader />;
+  }
+
+  // Desktop Header JSX (your existing code)
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 relative">
+      {/* AddCard Drawer */}
       <div
-        className={`
-    fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl
-    transition-all duration-300 ease-in-out
-    ${AddCardOpen ? "w-80" : "w-0 overflow-hidden"}
-  `}
+        className={`fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl transition-all duration-300 ease-in-out ${
+          AddCardOpen ? "w-80" : "w-0 overflow-hidden"
+        }`}
       >
-        {/* Close Button */}
         <button
           onClick={() => setAddCardOpen(false)}
           className="absolute top-5 left-5 text-gray-700 hover:text-gray-900 p-2 rounded-full transition-colors"
@@ -70,14 +84,12 @@ export default function Header() {
         />
       </div>
 
+      {/* Fevourite Drawer */}
       <div
-        className={`
-    fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl
-    transition-all duration-300 ease-in-out
-    ${federatedOpen ? "w-80" : "w-0 overflow-hidden"}
-  `}
+        className={`fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl transition-all duration-300 ease-in-out ${
+          federatedOpen ? "w-80" : "w-0 overflow-hidden"
+        }`}
       >
-        {/* Close Button */}
         <button
           onClick={() => setFederatedOpen(false)}
           className="absolute top-5 left-5 text-gray-700 hover:text-gray-900 p-2 rounded-full transition-colors"
@@ -86,6 +98,8 @@ export default function Header() {
         </button>
         <FevouriteCard />
       </div>
+
+      {/* Top Contact / Auth */}
       <div className="bg-indigo-50 text-black text-sm flex items-center gap-5 justify-end px-40">
         <div className="flex gap-6 items-center py-2">
           <p>
@@ -126,62 +140,60 @@ export default function Header() {
         )}
       </div>
 
+      {/* Main Navbar */}
       <div className="py-4 flex items-center justify-between px-40">
         {/* Logo */}
         <div className="h-[60px] w-[150px]">
           <img src="/logo.png" className="h-full w-full object-contain" />
         </div>
 
-        {/* Navigation Links - hidden on small screens */}
+        {/* Navigation Links */}
         <nav className="hidden md:flex space-x-8 font-medium text-gray-700">
           <ul className="flex gap-5">
-            {NavLinks.map((v, i) => {
-              return (
-                <li
-                  key={i}
-                  className="relative"
-                  onMouseLeave={() => setIsopen(null)}
-                  onMouseEnter={() => setIsopen(isopen === i ? null : i)}
+            {NavLinks.map((v, i) => (
+              <li
+                key={i}
+                className="relative"
+                onMouseLeave={() => setIsopen(null)}
+                onMouseEnter={() => setIsopen(isopen === i ? null : i)}
+              >
+                <NavLink
+                  className={({ isActive }) =>
+                    ` py-5 ${isActive ? "text-indigo-500" : "text-black "}`
+                  }
+                  to={v.link}
                 >
-                  <NavLink
-                    className={({ isActive }) =>
-                      ` py-5 ${isActive ? "text-indigo-500" : "text-black "}`
-                    }
-                    to={v.link}
-                  >
-                    {v.name} {"  "}{" "}
-                    {(v.submenu && AllCategory.length>0) && <i className="fa-solid fa-angle-down"></i>}
-                  </NavLink>
-                  {isopen === i && v.submenu && (
-                    <div
-                      className={`fixed bg-white ${
-                        isTopPostion ? "top-32" : "top-40"
-                      } z-20  w-[60%] left-90 rounded-lg shadow`}
-                    >
-                      <ul className="grid grid-cols-4 gap-4  p-5">
-                        {AllCategory.map((subItem, subIndex) => {
-                          return (
-                            <li key={subIndex} className="w-full">
-                              <Link
-                                to={`/shop/${subItem?.name}`}
-                                className="text-gray-700 hover:text-blue-500  font-[500]"
-                              >
-                                {subItem?.name}
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
+                  {v.name} {v.submenu && AllCategory.length > 0 && (
+                    <i className="fa-solid fa-angle-down"></i>
                   )}
-                </li>
-              );
-            })}
+                </NavLink>
+                {isopen === i && v.submenu && (
+                  <div
+                    className={`fixed bg-white ${
+                      isTopPostion ? "top-32" : "top-40"
+                    } z-20  w-[60%] left-90 rounded-lg shadow`}
+                  >
+                    <ul className="grid grid-cols-4 gap-4  p-5">
+                      {AllCategory.map((subItem, subIndex) => (
+                        <li key={subIndex} className="w-full">
+                          <Link
+                            to={`/shop/${subItem?.name}`}
+                            className="text-gray-700 hover:text-blue-500  font-[500]"
+                          >
+                            {subItem?.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            ))}
           </ul>
         </nav>
 
-        {/* Search Bar */}
-        {issetSearchOpen === true && (
+        {/* Search + User Icons */}
+        {issetSearchOpen && (
           <div className="flex-1 mx-4 max-w-md">
             <input
               type="text"
@@ -191,7 +203,6 @@ export default function Header() {
           </div>
         )}
 
-        {/* User actions: Account icons + Sign In/Sign Up */}
         <div className="flex items-center space-x-4 text-gray-700 text-[22px]">
           <i
             className="fa-solid fa-magnifying-glass"
@@ -211,14 +222,14 @@ export default function Header() {
             </p>
           </div>
 
-          <div className="ml-20">
-            {user && (
+          {user && (
+            <div className="ml-20">
               <Link to={"/profile"}>
                 <i className="fa-solid fa-circle-user"></i>
                 <span className="ml-3 text-[1.2rem]">Myaccount</span>
               </Link>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
