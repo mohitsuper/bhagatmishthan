@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import Marquee from "react-fast-marquee";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { TopbarData } from "../../data/topbar/TopbarData";
 import { GetTopbarData } from "../../Api/Api";
 export default function TopBar() {
   const [data, setData] = useState([]);

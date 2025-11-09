@@ -8,7 +8,7 @@ export default function AddToCard({isHandelReloade}) {
    useEffect(() => {
       const FetchApiData = async () => {
         const data = await GetCard();
-        setAddCardData(data);
+        setAddCardData(data || []);
         setCount(AddCardData?.length)
       };
       FetchApiData();
@@ -18,6 +18,9 @@ export default function AddToCard({isHandelReloade}) {
   
   async function AddToCardApi(id){
       const responce = await DeleteCardItem(id);
+      if(AddCardData.length >0){
+         isHandelReloade(true)
+      }
       isHandelReloade(true)
   }
   return (
