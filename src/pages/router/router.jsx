@@ -7,6 +7,7 @@ import ShopProductDeilties from '../ShopProductDeilties/ShopProductDeilties'
 import Singin from '../singin/Singin'
 import Singup from '../singup/Singup'
 import Myaccount from '../Profile/Myaccount'
+import Error404 from '../404Page/Error404'
 export default function Allrouter() {
   return (
           <Routes>
@@ -17,7 +18,7 @@ export default function Allrouter() {
             <Route path='/shop/:slug' element={<ShopPage/>}/>
             <Route path='/shop/:slug/:slug' element={<ShopProductDeilties/>}/>
             <Route path="/profile" element={<Myaccount/>}/>
-            {/* <Route path="/chekout" element={}/> */}
+            <Route path="/*" element={<Error404/>}/>
           </Routes>
   )
 }
