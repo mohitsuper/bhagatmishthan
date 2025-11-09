@@ -23,7 +23,7 @@ export default function Header() {
   };
   const GetcategoryAll = async () => {
     const responce = await GetCategory();
-    setAllCategory(responce);
+    setAllCategory(responce || []);
   };
   useEffect(() => {
     const FetchApiData = async () => {
@@ -150,7 +150,7 @@ export default function Header() {
                     to={v.link}
                   >
                     {v.name} {"  "}{" "}
-                    {v.submenu && <i className="fa-solid fa-angle-down"></i>}
+                    {(v.submenu && AllCategory.length>0) && <i className="fa-solid fa-angle-down"></i>}
                   </NavLink>
                   {isopen === i && v.submenu && (
                     <div
