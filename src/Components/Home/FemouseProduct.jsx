@@ -3,8 +3,8 @@ import React from 'react'
 export default function FemouseProduct({FemouseProductData}) {
     // let FemouseProductData =
   return (
-    <div className='w-full h-full flex justify-center items-center py-15 px-5'>
-        <div className='flex gap-4'>
+    <div className='w-full h-full flex items-center py-15 px-5'>
+        <div className='flex gap-4 lg:flex-row flex-col '>
           {
             FemouseProductData.map((item, index) => {
               return(

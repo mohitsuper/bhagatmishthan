@@ -10,7 +10,7 @@ export default function GiftingProduct({allProduct}) {
   const GiftingProduct =   allProduct.length >0? allProduct.filter((item)=>item?.productType.includes("Gifting's product")):[];
   if(GiftingProduct.length > 0){ 
     return (
-      <div className='px-35 pt-20'>
+      <div className='pt-20 lg:px-35 px-10'>
           <HomeHeading title={"Gifting's product"}/>
           <div className='pt-15'>
            <Swiper 

@@ -57,10 +57,10 @@ export default function Hero() {
       pagination={{ clickable: true }}
       autoplay={{ delay: 4000, disableOnInteraction: false }}
       loop={true}
-      className="h-[630px] w-full"
+      className="h-full w-full"
     >
       {banner.map((item, index) => (
-        <SwiperSlide key={index} className="w-full h-full">
+        <SwiperSlide key={index} className="w-full h-50">
           <img
             src={item.image}
             alt={`Hero Slide ${index + 1}`}

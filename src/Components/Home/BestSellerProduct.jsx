@@ -17,7 +17,7 @@ export default function BestSellerProduct({allProduct,allProductType}) {
 
 function AllBestSellerProduct({BestSellerProductData}){
     return(
-        <div className="grid xl:grid-cols-4 grid-cols-2 gap-4 xl:px-35 px-5 py-5">
+        <div className="grid xl:grid-cols-4 grid-cols-1 gap-4 xl:px-35 px-5 py-5">
             {BestSellerProductData?.length !==0 && BestSellerProductData?.map((item, index) => {
                  return(
                     <SIngleCard key={index} data={item} />

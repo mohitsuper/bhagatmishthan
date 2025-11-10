@@ -9,10 +9,10 @@ const videoUrl =[
     "https://www.youtube.com/embed/SyPaW4dD7AQ",
 ]
   return (
-    <div className='pt-20 px-35 mb-10'>
+    <div className='pt-20 md:px-35 px-5  mb-10'>
         <HomeHeading title={"Video Gallery"}/>
         <div className='video-section pt-15'>
-            <div className='grid grid-cols-4 gap-5'>
+            <div className='grid md:grid-cols-4 grid-cols-1 gap-5'>
                 {
                     videoUrl.map((v,i)=>{
                         return (

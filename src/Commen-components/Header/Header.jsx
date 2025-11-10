@@ -6,145 +6,118 @@ import { GetCard, GetCategory } from "../../Api/Api";
 import AddToCard from "./AddToCard";
 import FevouriteCard from "./FevouriteCard";
 import { AddToCardVal } from "../../UseContext/AddToCardContext";
-import MobileHeader from "./MobileHeader";
+import { MobileHeader } from "./MobileHeader";
 
 export default function Header() {
-  const [isopen, setIsopen] = useState(null);
-  const [AddCardOpen, setAddCardOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(null);
+  const [addCardOpen, setAddCardOpen] = useState(false);
   const [federatedOpen, setFederatedOpen] = useState(false);
-  const [AddCardData, setAddCardData] = useState([]);
-  const [isTopPostion, setisTopPostion] = useState(false);
-  const [issetSearchOpen, setisSearchOpen] = useState(false);
-  const [isRelode, setIsReload] = useState(false);
-  const [AllCategory, setAllCategory] = useState([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); // <-- check initial size
-
+  const [addCardData, setAddCardData] = useState([]);
+  const [isTopPosition, setIsTopPosition] = useState(false);
+  const [issetSearchOpen, setIsSearchOpen] = useState(false);
+  const [isReload, setIsReload] = useState(false);
+  const [allCategory, setAllCategory] = useState([]);
+  const [IsMobile,setIsMobile] = useState(false)
   const user = JSON.parse(sessionStorage.getItem("user"));
   const { count } = useContext(AddToCardVal);
 
-  const isHandelReloade = (data) => {
+  const handleReload = (data) => {
     setIsReload(data);
   };
 
-  const GetcategoryAll = async () => {
-    const responce = await GetCategory();
-    setAllCategory(responce || []);
+  const getAllCategories = async () => {
+    const response = await GetCategory();
+    setAllCategory(response || []);
   };
 
-  // Detect window resize for mobile
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    const FetchApiData = async () => {
+    const fetchApiData = async () => {
       const data = await GetCard();
       setAddCardData(data);
-      GetcategoryAll();
+      getAllCategories();
     };
-    FetchApiData();
-  }, [isRelode]);
+    fetchApiData();
+  }, [isReload]);
 
   useEffect(() => {
+    const changed = () => setIsMobile(window.innerWidth <= 992)
+    changed()
+    window.addEventListener('resize', changed)
+    return () => window.removeEventListener('resize', changed)
+  }, []);
+  useEffect(() => {
     const handleScroll = () => {
-      setisTopPostion(window.scrollY >= 30);
+      setIsTopPosition(window.scrollY >= 30);
     };
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // If mobile, render MobileHeader
-  if (isMobile) {
-    return <MobileHeader />;
+  if(IsMobile){
+    return (
+      <MobileHeader/>
+    )
   }
-
-  // Desktop Header JSX (your existing code)
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 relative">
-      {/* AddCard Drawer */}
+      {/* Add to Cart Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl transition-all duration-300 ease-in-out ${
-          AddCardOpen ? "w-80" : "w-0 overflow-hidden"
-        }`}
+        className={`
+          fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl
+          transition-all duration-300 ease-in-out
+          ${addCardOpen ? "w-80" : "w-0 overflow-hidden"}
+        `}
       >
         <button
           onClick={() => setAddCardOpen(false)}
           className="absolute top-5 left-5 text-gray-700 hover:text-gray-900 p-2 rounded-full transition-colors"
         >
-          <i className="fas fa-xmark text-2xl"></i>
+          <i className="fa-solid fa-xmark"></i>
         </button>
-        <AddToCard
-          AddCardOpen={AddCardOpen}
-          isHandelReloade={isHandelReloade}
-          AddCardData={AddCardData}
-        />
+        <AddToCard addCardData={addCardData} onReload={handleReload} />
       </div>
 
-      {/* Fevourite Drawer */}
+      {/* Favourite Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl transition-all duration-300 ease-in-out ${
-          federatedOpen ? "w-80" : "w-0 overflow-hidden"
-        }`}
+        className={`
+          fixed top-0 right-0 h-screen bg-white z-50 shadow-2xl
+          transition-all duration-300 ease-in-out
+          ${federatedOpen ? "w-80" : "w-0 overflow-hidden"}
+        `}
       >
         <button
           onClick={() => setFederatedOpen(false)}
           className="absolute top-5 left-5 text-gray-700 hover:text-gray-900 p-2 rounded-full transition-colors"
         >
-          <i className="fas fa-xmark text-2xl"></i>
+          <i className="fa-solid fa-xmark"></i>
         </button>
         <FevouriteCard />
       </div>
 
-      {/* Top Contact / Auth */}
+      {/* Top Contact Bar */}
       <div className="bg-indigo-50 text-black text-sm flex items-center gap-5 justify-end px-40">
         <div className="flex gap-6 items-center py-2">
           <p>
-            <i className="fa-solid fa-phone"></i> {ContactInfo.phone}
+            <i className="fa-solid fa-phone mr-2 text-indigo-500"></i>
+            {ContactInfo.phone}
           </p>
-          <span>|</span>
           <p>
-            <i className="fa-solid fa-envelope"></i> {ContactInfo.email}
+            <i className="fa-solid fa-envelope mr-2 text-indigo-500"></i>
+            {ContactInfo.email}
           </p>
         </div>
-        {user ? (
-          <div className="flex py-2 gap-3">
-            <button
-              className="text-indigo-600 hover:text-indigo-800 font-semibold px-3 py-1 border border-indigo-600 rounded-md transition cursor-pointer"
-              onClick={() => {
-                sessionStorage.clear();
-                window.location.reload();
-              }}
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <div className="flex py-2 gap-3">
-            <Link
-              className="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold px-3 py-1 rounded-md transition cursor-pointer"
-              to="/singin"
-            >
-              Sign In
-            </Link>
-            <Link
-              className="bg-white border border-indigo-500  text-indigo-500 hover:bg-indigo-700 font-semibold px-3 py-1 rounded-md transition cursor-pointer"
-              to="/singup"
-            >
-              Sign Up
-            </Link>
-          </div>
-        )}
       </div>
 
-      {/* Main Navbar */}
+      {/* Main Header */}
       <div className="py-4 flex items-center justify-between px-40">
         {/* Logo */}
         <div className="h-[60px] w-[150px]">
-          <img src="/logo.png" className="h-full w-full object-contain" />
+          <img
+            src="/logo.png"
+            className="h-full w-full object-contain"
+            alt="Logo"
+          />
         </div>
 
         {/* Navigation Links */}
@@ -154,31 +127,33 @@ export default function Header() {
               <li
                 key={i}
                 className="relative"
-                onMouseLeave={() => setIsopen(null)}
-                onMouseEnter={() => setIsopen(isopen === i ? null : i)}
+                onMouseLeave={() => setIsOpen(null)}
+                onMouseEnter={() => setIsOpen(isOpen === i ? null : i)}
               >
                 <NavLink
                   className={({ isActive }) =>
-                    ` py-5 ${isActive ? "text-indigo-500" : "text-black "}`
+                    `py-5 ${isActive ? "text-indigo-500" : "text-black"}`
                   }
                   to={v.link}
                 >
-                  {v.name} {v.submenu && AllCategory.length > 0 && (
-                    <i className="fa-solid fa-angle-down"></i>
+                  {v.name}{" "}
+                  {v.submenu && allCategory.length > 0 && (
+                    <i className="fa-solid fa-angle-down ml-1"></i>
                   )}
                 </NavLink>
-                {isopen === i && v.submenu && (
+
+                {isOpen === i && v.submenu && (
                   <div
                     className={`fixed bg-white ${
-                      isTopPostion ? "top-32" : "top-40"
-                    } z-20  w-[60%] left-90 rounded-lg shadow`}
+                      isTopPosition ? "top-32" : "top-40"
+                    } z-20 w-[60%] left-40 rounded-lg shadow`}
                   >
-                    <ul className="grid grid-cols-4 gap-4  p-5">
-                      {AllCategory.map((subItem, subIndex) => (
+                    <ul className="grid grid-cols-4 gap-4 p-5">
+                      {allCategory.map((subItem, subIndex) => (
                         <li key={subIndex} className="w-full">
                           <Link
                             to={`/shop/${subItem?.name}`}
-                            className="text-gray-700 hover:text-blue-500  font-[500]"
+                            className="text-gray-700 hover:text-blue-500 font-[500]"
                           >
                             {subItem?.name}
                           </Link>
@@ -192,41 +167,48 @@ export default function Header() {
           </ul>
         </nav>
 
-        {/* Search + User Icons */}
+        {/* Search Bar */}
         {issetSearchOpen && (
           <div className="flex-1 mx-4 max-w-md">
             <input
               type="text"
-              placeholder="Search products..."
-              className="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Search..."
+              className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-300"
             />
           </div>
         )}
 
-        <div className="flex items-center space-x-4 text-gray-700 text-[22px]">
+        {/* Icons Section */}
+        <div className="flex items-center space-x-6 text-gray-700 text-[22px]">
           <i
-            className="fa-solid fa-magnifying-glass"
-            onClick={() => setisSearchOpen(!issetSearchOpen)}
+            className="fa-solid fa-magnifying-glass cursor-pointer"
+            onClick={() => setIsSearchOpen(!issetSearchOpen)}
           ></i>
 
-          <div className="relative" onClick={() => setFederatedOpen(true)}>
-            <i className="fa-solid fa-heart text-red-600"></i>
-            <p className="text-[12px] p-2 bg-red-600 text-white h-4 w-4 flex justify-center items-center absolute top-0 -right-2 rounded-full">
-              {0}
-            </p>
+          <div
+            className="relative cursor-pointer"
+            onClick={() => setFederatedOpen(true)}
+          >
+            <i className="fa-regular fa-heart"></i>
           </div>
-          <div className="relative" onClick={() => setAddCardOpen(true)}>
+
+          <div
+            className="relative cursor-pointer"
+            onClick={() => setAddCardOpen(true)}
+          >
             <i className="fa-solid fa-cart-shopping"></i>
-            <p className="text-[12px] p-2 bg-red-600 text-white h-4 w-4 flex justify-center items-center absolute top-0 -right-2 rounded-full">
-              {count}
-            </p>
+            {count > 0 && (
+              <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs rounded-full px-1.5">
+                {count}
+              </span>
+            )}
           </div>
 
           {user && (
-            <div className="ml-20">
-              <Link to={"/profile"}>
+            <div className="ml-4">
+              <Link to="/profile" className="flex items-center space-x-2">
                 <i className="fa-solid fa-circle-user"></i>
-                <span className="ml-3 text-[1.2rem]">Myaccount</span>
+                <span className="text-[1.1rem] font-medium">My Account</span>
               </Link>
             </div>
           )}
